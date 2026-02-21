@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, CheckCircle2, XCircle, AlertCircle, Brain, Globe } from "lucide-react";
+import { CheckCircle2, XCircle, AlertCircle, Brain, Globe, Loader2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 
 export default function Home() {
-  const { user, loading: authLoading, isAuthenticated, logout } = useAuth();
   const [url, setUrl] = useState("");
   const [, setLocation] = useLocation();
 
@@ -33,25 +31,7 @@ export default function Home() {
             <Brain className="h-6 w-6 text-primary" />
             <span className="font-bold text-xl text-foreground">LLM Readiness Checker</span>
           </div>
-          <div className="flex items-center gap-4">
-            {authLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : isAuthenticated ? (
-              <>
-                <Button variant="ghost" onClick={() => setLocation("/history")}>
-                  History
-                </Button>
-                <span className="text-sm text-muted-foreground">{user?.name || user?.email}</span>
-                <Button variant="outline" size="sm" onClick={logout}>
-                  Sign Out
-                </Button>
-              </>
-            ) : (
-              <Button asChild>
-                <a href="/api/auth/google">Sign In with Google</a>
-              </Button>
-            )}
-          </div>
+          <div className="flex items-center gap-4" />
         </div>
       </header>
 

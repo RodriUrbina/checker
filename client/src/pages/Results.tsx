@@ -6,7 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { Loader2, CheckCircle2, XCircle, ArrowLeft, ExternalLink, AlertCircle, Download } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { useLocation, useRoute, useSearch } from "wouter";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function Results() {
   const [, params] = useRoute("/results/:id");
@@ -14,6 +15,7 @@ export default function Results() {
   const search = useSearch();
   const { isAuthenticated } = useAuth();
   const hasTriggeredDownload = useRef(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   const analysisId = params?.id ? parseInt(params.id) : 0;
   const searchParams = new URLSearchParams(search);
@@ -63,8 +65,7 @@ export default function Results() {
 
   function handleDownload() {
     if (!isAuthenticated) {
-      // Redirect to Google OAuth with returnTo pointing back here with download flag
-      window.location.href = `/api/auth/google?returnTo=${encodeURIComponent(`/results/${analysisId}?download=true`)}`;
+      setShowAuthDialog(true);
       return;
     }
     if (analysis) {
@@ -320,6 +321,22 @@ export default function Results() {
           )}
         </div>
       </div>
+
+      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sign in to download</DialogTitle>
+            <DialogDescription>
+              Sign in with your Google account to download the analysis report.
+            </DialogDescription>
+          </DialogHeader>
+          <Button asChild>
+            <a href={`/api/auth/google?returnTo=${encodeURIComponent(`/results/${analysisId}?download=true`)}`}>
+              Sign In with Google
+            </a>
+          </Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
