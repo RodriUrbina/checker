@@ -2,15 +2,10 @@
   "framework": "vite",
   "outputDirectory": "dist/public",
   "buildCommand": "vite build && node scripts/build-api.mjs",
-  "functions": {
-    "api-dist/**/*.mjs": {
-      "runtime": "@vercel/node"
-    }
-  },
   "rewrites": [
-    { "source": "/api/trpc/:path*", "destination": "/api-dist/trpc" },
-    { "source": "/api/auth/google", "destination": "/api-dist/auth/google" },
-    { "source": "/api/auth/callback", "destination": "/api-dist/auth/callback" },
-    { "source": "/api/auth/logout", "destination": "/api-dist/auth/logout" }
+    { "source": "/api/trpc/:path*", "destination": "/api/trpc/[...trpc]" },
+    { "source": "/api/auth/google", "destination": "/api/auth/google" },
+    { "source": "/api/auth/callback", "destination": "/api/auth/callback" },
+    { "source": "/api/auth/logout", "destination": "/api/auth/logout" }
   ]
 }

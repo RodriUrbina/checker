@@ -5,17 +5,17 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
-const outDir = resolve(root, "api-dist");
+const outDir = resolve(root, "api");
 
 // Clean output
 rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
 
 const entries = [
-  { entryPoint: "server/api/trpc/[...trpc].ts", outfile: "api-dist/trpc/index.mjs" },
-  { entryPoint: "server/api/auth/google.ts", outfile: "api-dist/auth/google.mjs" },
-  { entryPoint: "server/api/auth/callback.ts", outfile: "api-dist/auth/callback.mjs" },
-  { entryPoint: "server/api/auth/logout.ts", outfile: "api-dist/auth/logout.mjs" },
+  { entryPoint: "server/api/trpc/[...trpc].ts", outfile: "api/trpc/[...trpc].mjs" },
+  { entryPoint: "server/api/auth/google.ts", outfile: "api/auth/google.mjs" },
+  { entryPoint: "server/api/auth/callback.ts", outfile: "api/auth/callback.mjs" },
+  { entryPoint: "server/api/auth/logout.ts", outfile: "api/auth/logout.mjs" },
 ];
 
 for (const entry of entries) {
