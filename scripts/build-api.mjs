@@ -26,8 +26,7 @@ for (const entry of entries) {
     platform: "node",
     target: "node20",
     format: "esm",
-    // Bundle everything including node_modules for self-contained functions
-    packages: "external",
+    // Bundle ALL dependencies for self-contained serverless functions
     alias: {
       "@shared": resolve(root, "shared"),
     },
