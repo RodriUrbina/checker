@@ -1,42 +1,45 @@
 import { build } from "esbuild";
-import { rmSync, mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, "..");
-const outDir = resolve(root, "api");
+const functionsDir = resolve(root, ".vercel/output/functions");
 
-// Clean output
-rmSync(outDir, { recursive: true, force: true });
-mkdirSync(outDir, { recursive: true });
+const vcConfig = JSON.stringify({
+  runtime: "edge",
+  entrypoint: "index.mjs",
+});
 
 const entries = [
-  { entryPoint: "server/api/trpc/[...trpc].ts", outfile: "api/trpc/[...trpc].mjs" },
-  { entryPoint: "server/api/auth/google.ts", outfile: "api/auth/google.mjs" },
-  { entryPoint: "server/api/auth/callback.ts", outfile: "api/auth/callback.mjs" },
-  { entryPoint: "server/api/auth/logout.ts", outfile: "api/auth/logout.mjs" },
+  { entryPoint: "server/api/trpc/[...trpc].ts", funcPath: "api/trpc/[...trpc].func" },
+  { entryPoint: "server/api/auth/google.ts", funcPath: "api/auth/google.func" },
+  { entryPoint: "server/api/auth/callback.ts", funcPath: "api/auth/callback.func" },
+  { entryPoint: "server/api/auth/logout.ts", funcPath: "api/auth/logout.func" },
 ];
 
 for (const entry of entries) {
+  const funcDir = resolve(functionsDir, entry.funcPath);
+  mkdirSync(funcDir, { recursive: true });
+
   await build({
     entryPoints: [resolve(root, entry.entryPoint)],
-    outfile: resolve(root, entry.outfile),
+    outfile: resolve(funcDir, "index.mjs"),
     bundle: true,
     platform: "node",
     target: "node20",
     format: "esm",
-    // Bundle ALL dependencies for self-contained serverless functions
+    // Bundle ALL dependencies for self-contained edge functions
     alias: {
       "@shared": resolve(root, "shared"),
     },
     sourcemap: false,
-    minify: false,
-    banner: {
-      js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);",
-    },
+    minify: true,
   });
-  console.log(`  Built ${entry.outfile}`);
+
+  writeFileSync(resolve(funcDir, ".vc-config.json"), vcConfig);
+  console.log(`  Built ${entry.funcPath}`);
 }
 
 console.log("API functions built successfully.");
