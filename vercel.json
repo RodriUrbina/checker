@@ -1,0 +1,11 @@
+{
+  "framework": "vite",
+  "outputDirectory": "dist/public",
+  "buildCommand": "vite build && node scripts/build-api.mjs",
+  "rewrites": [
+    { "source": "/api/trpc/:path*", "destination": "/api-dist/trpc/[...trpc]" },
+    { "source": "/api/auth/google", "destination": "/api-dist/auth/google" },
+    { "source": "/api/auth/callback", "destination": "/api-dist/auth/callback" },
+    { "source": "/api/auth/logout", "destination": "/api-dist/auth/logout" }
+  ]
+}
