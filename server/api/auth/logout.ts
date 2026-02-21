@@ -1,4 +1,4 @@
-import { buildClearCookieHeader, getAppUrl } from "../../server/_core/auth";
+import { buildClearCookieHeader, getAppUrl } from "../../_core/auth";
 
 export default async function handler() {
   return new Response(null, {

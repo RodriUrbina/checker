@@ -1,5 +1,5 @@
-import { getGoogleOAuth, parseCookies, buildSetCookieHeader, createSessionToken, getAppUrl } from "../../server/_core/auth";
-import { upsertUser } from "../../server/db";
+import { getGoogleOAuth, parseCookies, buildSetCookieHeader, createSessionToken, getAppUrl } from "../../_core/auth";
+import { upsertUser } from "../../db";
 
 export default async function handler(req: Request) {
   const url = new URL(req.url);

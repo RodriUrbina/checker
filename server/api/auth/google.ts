@@ -1,5 +1,5 @@
 import { generateCodeVerifier, generateState } from "arctic";
-import { getGoogleOAuth } from "../../server/_core/auth";
+import { getGoogleOAuth } from "../../_core/auth";
 
 export default async function handler(req: Request) {
   const url = new URL(req.url);

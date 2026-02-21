@@ -29,13 +29,13 @@ function apiDevPlugin(): Plugin {
           // Determine which handler module to load
           let modulePath: string | null = null;
           if (url.startsWith("/api/trpc")) {
-            modulePath = path.resolve(PROJECT_ROOT, "api/trpc/[...trpc].ts");
+            modulePath = path.resolve(PROJECT_ROOT, "server/api/trpc/[...trpc].ts");
           } else if (url === "/api/auth/google" || url.startsWith("/api/auth/google?")) {
-            modulePath = path.resolve(PROJECT_ROOT, "api/auth/google.ts");
+            modulePath = path.resolve(PROJECT_ROOT, "server/api/auth/google.ts");
           } else if (url.startsWith("/api/auth/callback")) {
-            modulePath = path.resolve(PROJECT_ROOT, "api/auth/callback.ts");
+            modulePath = path.resolve(PROJECT_ROOT, "server/api/auth/callback.ts");
           } else if (url === "/api/auth/logout") {
-            modulePath = path.resolve(PROJECT_ROOT, "api/auth/logout.ts");
+            modulePath = path.resolve(PROJECT_ROOT, "server/api/auth/logout.ts");
           }
 
           if (!modulePath) return next();

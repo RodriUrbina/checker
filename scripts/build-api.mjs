@@ -12,10 +12,10 @@ rmSync(outDir, { recursive: true, force: true });
 mkdirSync(outDir, { recursive: true });
 
 const entries = [
-  { entryPoint: "api/trpc/[...trpc].ts", outfile: "api-dist/trpc/[...trpc].mjs" },
-  { entryPoint: "api/auth/google.ts", outfile: "api-dist/auth/google.mjs" },
-  { entryPoint: "api/auth/callback.ts", outfile: "api-dist/auth/callback.mjs" },
-  { entryPoint: "api/auth/logout.ts", outfile: "api-dist/auth/logout.mjs" },
+  { entryPoint: "server/api/trpc/[...trpc].ts", outfile: "api-dist/trpc/index.mjs" },
+  { entryPoint: "server/api/auth/google.ts", outfile: "api-dist/auth/google.mjs" },
+  { entryPoint: "server/api/auth/callback.ts", outfile: "api-dist/auth/callback.mjs" },
+  { entryPoint: "server/api/auth/logout.ts", outfile: "api-dist/auth/logout.mjs" },
 ];
 
 for (const entry of entries) {
@@ -26,14 +26,16 @@ for (const entry of entries) {
     platform: "node",
     target: "node20",
     format: "esm",
-    // Keep node_modules as external — Vercel installs them
+    // Bundle everything including node_modules for self-contained functions
     packages: "external",
-    // Resolve path aliases
     alias: {
       "@shared": resolve(root, "shared"),
     },
     sourcemap: false,
     minify: false,
+    banner: {
+      js: "import { createRequire } from 'module'; const require = createRequire(import.meta.url);",
+    },
   });
   console.log(`  Built ${entry.outfile}`);
 }
