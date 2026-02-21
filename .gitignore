@@ -111,7 +111,7 @@ temp/
 
 # Vercel
 .vercel/
-api/
+/api/
 
 # Manus logs (legacy)
 .manus-logs/

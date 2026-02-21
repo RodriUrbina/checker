@@ -20,9 +20,10 @@ export default async function handler(req: Request) {
 
   return new Response(null, {
     status: 302,
-    headers: {
-      Location: authUrl.toString(),
-      "Set-Cookie": oauthCookie,
-    },
+    headers: [
+      ["Location", authUrl.toString()],
+      ["Set-Cookie", oauthCookie],
+      ["Cache-Control", "private, no-store"],
+    ],
   });
 }

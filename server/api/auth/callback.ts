@@ -70,6 +70,7 @@ export default async function handler(req: Request) {
       ["Location", redirectUrl],
       ["Set-Cookie", sessionCookie],
       ["Set-Cookie", clearOauthCookie],
+      ["Cache-Control", "private, no-store"],
     ],
   });
 }
