@@ -33,8 +33,12 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) return;
-    analyzeMutation.mutate({ url: url.trim() });
+    let trimmed = url.trim();
+    if (!trimmed) return;
+    if (!/^https?:\/\//i.test(trimmed)) {
+      trimmed = `https://${trimmed}`;
+    }
+    analyzeMutation.mutate({ url: trimmed });
   };
 
   return (
@@ -77,10 +81,10 @@ export default function Home() {
         <div className="mx-auto max-w-3xl text-center space-y-8 relative z-10">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
-              Is Your Website Ready for <span className="text-primary">LLMs</span>?
+              If AI agents can't read your site, <span className="text-primary">you are irrelevant</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Evaluate how well your website is prepared to handle LLM requests and interactions. Get actionable insights to improve machine readability.
+              Make sure agents can find, understand, and recommend you.
             </p>
           </div>
 
@@ -89,15 +93,15 @@ export default function Home() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-card-foreground">
                 <Globe className="h-5 w-5" />
-                Analyze a Website
+                Analyze your Website
               </CardTitle>
               <CardDescription>Enter a URL to check its LLM readiness</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <Input
-                  type="url"
-                  placeholder="https://example.com"
+                  type="text"
+                  placeholder="example.com"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   disabled={analyzeMutation.isPending}
@@ -125,7 +129,7 @@ export default function Home() {
 
           {/* Result Preview Mock */}
           <div className="mt-8 space-y-3">
-            <p className="text-sm text-muted-foreground">Here's what your report will look like</p>
+            <p className="text-lg md:text-xl font-semibold text-foreground">Our Analysis will provide you with a score based on these web technologies:</p>
             <Card className="bg-card/50 text-card-foreground border-dashed opacity-90 overflow-hidden">
               <CardContent className="pt-6 pb-4 space-y-4">
                 <div className="flex items-center justify-between">
