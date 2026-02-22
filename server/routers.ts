@@ -1,7 +1,7 @@
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import { analyzeWebsite } from "./analyzer";
-import { createAnalysis, getUserAnalyses, getAnalysisById, linkAnalysisToUser } from "./db";
+import { createAnalysis, getUserAnalyses, getAnalysisById, linkAnalysisToUser, createLead } from "./db";
 
 export const appRouter = router({
   auth: router({
@@ -68,6 +68,24 @@ export const appRouter = router({
           return linkAnalysisToUser(input.id, ctx.user.id);
         }
         return analysis;
+      }),
+  }),
+
+  leads: router({
+    submit: publicProcedure
+      .input(z.object({ email: z.string().email(), analysisId: z.number() }))
+      .mutation(async ({ input }) => {
+        const analysis = await getAnalysisById(input.analysisId);
+        if (!analysis) {
+          throw new Error("Analysis not found");
+        }
+        await createLead({
+          email: input.email,
+          analysisId: analysis.id,
+          url: analysis.url,
+          score: analysis.score,
+        });
+        return { success: true };
       }),
   }),
 });

@@ -1,7 +1,7 @@
 import { eq, desc } from "drizzle-orm";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { users, analyses, type InsertUser, type InsertAnalysis, type Analysis, type User } from "../drizzle/schema";
+import { users, analyses, leads, type InsertUser, type InsertAnalysis, type InsertLead, type Analysis, type Lead, type User } from "../drizzle/schema";
 
 function getDb() {
   const url = process.env.DATABASE_URL;
@@ -89,4 +89,10 @@ export async function linkAnalysisToUser(analysisId: number, userId: number): Pr
     .where(eq(analyses.id, analysisId))
     .returning();
   return updated;
+}
+
+export async function createLead(lead: InsertLead): Promise<Lead> {
+  const db = getDb();
+  const [inserted] = await db.insert(leads).values(lead).returning();
+  return inserted;
 }

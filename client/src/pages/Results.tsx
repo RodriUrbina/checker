@@ -1,83 +1,37 @@
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, CheckCircle2, XCircle, ArrowLeft, ExternalLink, AlertCircle, Download } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2, CheckCircle2, XCircle, ArrowLeft, ExternalLink, AlertCircle, ArrowRight } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { useLocation, useRoute, useSearch } from "wouter";
-import { useEffect, useRef, useState } from "react";
+import { useLocation, useRoute } from "wouter";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 export default function Results() {
   const [, params] = useRoute("/results/:id");
   const [, setLocation] = useLocation();
-  const search = useSearch();
-  const { isAuthenticated } = useAuth();
-  const hasTriggeredDownload = useRef(false);
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showLeadDialog, setShowLeadDialog] = useState(false);
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
 
   const analysisId = params?.id ? parseInt(params.id) : 0;
-  const searchParams = new URLSearchParams(search);
-  const shouldDownload = searchParams.get("download") === "true";
 
   const { data: analysis, isLoading, error } = trpc.analysis.getById.useQuery(
     { id: analysisId },
     { enabled: analysisId > 0 }
   );
 
-  const claimMutation = trpc.analysis.claim.useMutation();
+  const leadMutation = trpc.leads.submit.useMutation({
+    onSuccess: () => setSubmitted(true),
+  });
 
-  // Handle post-auth download flow
-  useEffect(() => {
-    if (!shouldDownload || !isAuthenticated || !analysis || hasTriggeredDownload.current) return;
-    hasTriggeredDownload.current = true;
-
-    // Claim the analysis for this user
-    claimMutation.mutate(
-      { id: analysisId },
-      {
-        onSuccess: () => {
-          triggerDownload(analysis);
-          // Clean up the URL
-          setLocation(`/results/${analysisId}`, { replace: true });
-        },
-        onError: () => {
-          // Still allow download even if claim fails (might already be owned)
-          triggerDownload(analysis);
-          setLocation(`/results/${analysisId}`, { replace: true });
-        },
-      }
-    );
-  }, [shouldDownload, isAuthenticated, analysis, analysisId]);
-
-  function triggerDownload(data: NonNullable<typeof analysis>) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `llm-readiness-${new URL(data.url).hostname}-${data.id}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function handleDownload() {
-    if (!isAuthenticated) {
-      setShowAuthDialog(true);
-      return;
-    }
-    if (analysis) {
-      // Claim then download
-      claimMutation.mutate(
-        { id: analysisId },
-        {
-          onSuccess: () => triggerDownload(analysis),
-          onError: () => triggerDownload(analysis),
-        }
-      );
-    }
+  function handleLeadSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email) return;
+    leadMutation.mutate({ email, analysisId });
   }
 
   if (isLoading) {
@@ -157,14 +111,14 @@ export default function Results() {
             </CardHeader>
             <CardContent className="space-y-4">
               <Progress value={analysis.score} className="h-3" />
-              <Button onClick={handleDownload} variant="outline" size="sm">
-                <Download className="mr-2 h-4 w-4" />
-                Download Report
+              <Button onClick={() => setShowLeadDialog(true)} size="sm">
+                Take me to 100
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          {/* Checks Grid */}
+          {/* 1. Feature Checks */}
           <Card className="bg-card text-card-foreground">
             <CardHeader>
               <CardTitle className="text-card-foreground">Feature Checks</CardTitle>
@@ -189,7 +143,30 @@ export default function Results() {
           {/* Detailed Findings */}
           {details && (
             <>
-              {/* API Endpoints */}
+              {/* 2. Recommendations (moved up) */}
+              {details.recommendations && details.recommendations.length > 0 && (
+                <Card className="bg-card text-card-foreground border-primary/50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-card-foreground">
+                      <AlertCircle className="h-5 w-5 text-primary" />
+                      Recommendations
+                    </CardTitle>
+                    <CardDescription>How to improve your LLM readiness score</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-3">
+                      {details.recommendations.map((rec: string, index: number) => (
+                        <li key={index} className="flex items-start gap-2">
+                          <span className="text-primary mt-1">&bull;</span>
+                          <span className="text-sm text-foreground">{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* 3. API Endpoints */}
               {details.apiEndpoints && details.apiEndpoints.length > 0 && (
                 <Card className="bg-card text-card-foreground">
                   <CardHeader>
@@ -207,7 +184,74 @@ export default function Results() {
                 </Card>
               )}
 
-              {/* Feeds */}
+              {/* 4. llms.txt */}
+              {details.llmsTxtContent && (
+                <Card className="bg-card text-card-foreground">
+                  <CardHeader>
+                    <CardTitle className="text-card-foreground">llms.txt Content</CardTitle>
+                    <CardDescription>First 500 characters</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <pre className="text-xs bg-secondary/50 p-4 rounded overflow-x-auto text-foreground whitespace-pre-wrap">
+                      {details.llmsTxtContent}
+                    </pre>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* 5. Semantic HTML Tags */}
+              {details.semanticTags && details.semanticTags.length > 0 && (
+                <Card className="bg-card text-card-foreground">
+                  <CardHeader>
+                    <CardTitle className="text-card-foreground">Semantic HTML Tags</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {details.semanticTags.map((tag: string, index: number) => (
+                        <Badge key={index} variant="secondary">
+                          &lt;{tag}&gt;
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* 6. Meta Tags */}
+              {details.metaTags && Object.keys(details.metaTags).length > 0 && (
+                <Card className="bg-card text-card-foreground">
+                  <CardHeader>
+                    <CardTitle className="text-card-foreground">Meta Tags</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {Object.entries(details.metaTags).map(([key, value]: [string, any], index: number) => (
+                        <div key={index} className="text-sm">
+                          <span className="font-semibold text-foreground">{key}:</span>{" "}
+                          <span className="text-muted-foreground">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* 7. Sitemap */}
+              {details.sitemapUrl && (
+                <Card className="bg-card text-card-foreground">
+                  <CardHeader>
+                    <CardTitle className="text-card-foreground">Sitemap</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <a href={details.sitemapUrl} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline flex items-center gap-2 text-foreground">
+                      <ExternalLink className="h-3 w-3" />
+                      {details.sitemapUrl}
+                    </a>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* 8. Feeds (moved to last) */}
               {details.feeds && details.feeds.length > 0 && (
                 <Card className="bg-card text-card-foreground">
                   <CardHeader>
@@ -227,114 +271,48 @@ export default function Results() {
                   </CardContent>
                 </Card>
               )}
-
-              {/* llms.txt */}
-              {details.llmsTxtContent && (
-                <Card className="bg-card text-card-foreground">
-                  <CardHeader>
-                    <CardTitle className="text-card-foreground">llms.txt Content</CardTitle>
-                    <CardDescription>First 500 characters</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <pre className="text-xs bg-secondary/50 p-4 rounded overflow-x-auto text-foreground whitespace-pre-wrap">
-                      {details.llmsTxtContent}
-                    </pre>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Semantic Tags */}
-              {details.semanticTags && details.semanticTags.length > 0 && (
-                <Card className="bg-card text-card-foreground">
-                  <CardHeader>
-                    <CardTitle className="text-card-foreground">Semantic HTML Tags</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2">
-                      {details.semanticTags.map((tag: string, index: number) => (
-                        <Badge key={index} variant="secondary">
-                          &lt;{tag}&gt;
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Meta Tags */}
-              {details.metaTags && Object.keys(details.metaTags).length > 0 && (
-                <Card className="bg-card text-card-foreground">
-                  <CardHeader>
-                    <CardTitle className="text-card-foreground">Meta Tags</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {Object.entries(details.metaTags).map(([key, value]: [string, any], index: number) => (
-                        <div key={index} className="text-sm">
-                          <span className="font-semibold text-foreground">{key}:</span>{" "}
-                          <span className="text-muted-foreground">{value}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Sitemap */}
-              {details.sitemapUrl && (
-                <Card className="bg-card text-card-foreground">
-                  <CardHeader>
-                    <CardTitle className="text-card-foreground">Sitemap</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <a href={details.sitemapUrl} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline flex items-center gap-2 text-foreground">
-                      <ExternalLink className="h-3 w-3" />
-                      {details.sitemapUrl}
-                    </a>
-                  </CardContent>
-                </Card>
-              )}
             </>
-          )}
-
-          {/* Recommendations */}
-          {details?.recommendations && details.recommendations.length > 0 && (
-            <Card className="bg-card text-card-foreground border-primary/50">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-card-foreground">
-                  <AlertCircle className="h-5 w-5 text-primary" />
-                  Recommendations
-                </CardTitle>
-                <CardDescription>How to improve your LLM readiness score</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3">
-                  {details.recommendations.map((rec: string, index: number) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <span className="text-primary mt-1">&bull;</span>
-                      <span className="text-sm text-foreground">{rec}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
           )}
         </div>
       </div>
 
-      <Dialog open={showAuthDialog} onOpenChange={setShowAuthDialog}>
+      <Dialog open={showLeadDialog} onOpenChange={setShowLeadDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Sign in to download</DialogTitle>
+            <DialogTitle>Take me to 100</DialogTitle>
             <DialogDescription>
-              Sign in with your Google account to download the analysis report.
+              Enter your email and we'll reach out with a personalized plan to get your score to 100.
             </DialogDescription>
           </DialogHeader>
-          <Button asChild>
-            <a href={`/api/auth/google?returnTo=${encodeURIComponent(`/results/${analysisId}?download=true`)}`}>
-              Sign In with Google
-            </a>
-          </Button>
+          {submitted ? (
+            <div className="flex items-center gap-2 text-green-600 py-4">
+              <CheckCircle2 className="h-5 w-5" />
+              <span className="text-sm font-medium">Thanks! We'll be in touch soon.</span>
+            </div>
+          ) : (
+            <form onSubmit={handleLeadSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="lead-email">Email</Label>
+                <Input
+                  id="lead-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={leadMutation.isPending}>
+                {leadMutation.isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : null}
+                Submit
+              </Button>
+              {leadMutation.isError && (
+                <p className="text-sm text-destructive">Something went wrong. Please try again.</p>
+              )}
+            </form>
+          )}
         </DialogContent>
       </Dialog>
     </div>

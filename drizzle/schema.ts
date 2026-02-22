@@ -42,3 +42,15 @@ export const analyses = pgTable("analyses", {
 
 export type Analysis = typeof analyses.$inferSelect;
 export type InsertAnalysis = typeof analyses.$inferInsert;
+
+export const leads = pgTable("leads", {
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 320 }).notNull(),
+  analysisId: integer("analysis_id").notNull(),
+  url: varchar("url", { length: 2048 }).notNull(),
+  score: integer("score").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type Lead = typeof leads.$inferSelect;
+export type InsertLead = typeof leads.$inferInsert;
