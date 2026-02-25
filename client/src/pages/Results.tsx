@@ -76,6 +76,7 @@ export default function Results() {
     { label: "Server-Side Rendering", value: analysis.hasServerSideRendering },
     { label: "Meta Tags", value: analysis.hasMetaTags },
     { label: "Sitemap", value: analysis.hasSitemap },
+    { label: "MCP Server", value: analysis.hasMcpServer },
   ];
 
   return (
@@ -251,7 +252,28 @@ export default function Results() {
                 </Card>
               )}
 
-              {/* 8. Feeds (moved to last) */}
+              {/* 8. MCP Server */}
+              {details.mcpServerInfo && (
+                <Card className="bg-card text-card-foreground">
+                  <CardHeader>
+                    <CardTitle className="text-card-foreground">MCP Server</CardTitle>
+                    <CardDescription>Model Context Protocol server detected</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {details.mcpServerInfo.name && (
+                      <p className="text-sm text-foreground mb-2">
+                        <span className="font-semibold">Name:</span> {details.mcpServerInfo.name}
+                      </p>
+                    )}
+                    <a href={details.mcpServerInfo.endpoint} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline flex items-center gap-2 text-foreground">
+                      <ExternalLink className="h-3 w-3" />
+                      {details.mcpServerInfo.endpoint}
+                    </a>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* 9. Feeds (moved to last) */}
               {details.feeds && details.feeds.length > 0 && (
                 <Card className="bg-card text-card-foreground">
                   <CardHeader>

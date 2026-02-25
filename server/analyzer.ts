@@ -14,6 +14,7 @@ export interface AnalysisResult {
   hasServerSideRendering: boolean;
   hasMetaTags: boolean;
   hasSitemap: boolean;
+  hasMcpServer: boolean;
   details: {
     apiEndpoints: string[];
     feeds: string[];
@@ -22,6 +23,7 @@ export interface AnalysisResult {
     semanticTags: string[];
     metaTags: { [key: string]: string };
     sitemapUrl: string | null;
+    mcpServerInfo: { endpoint: string; name?: string } | null;
     recommendations: string[];
   };
 }
@@ -44,6 +46,7 @@ export async function analyzeWebsite(url: string): Promise<AnalysisResult> {
     hasServerSideRendering: false,
     hasMetaTags: false,
     hasSitemap: false,
+    hasMcpServer: false,
     details: {
       apiEndpoints: [],
       feeds: [],
@@ -52,6 +55,7 @@ export async function analyzeWebsite(url: string): Promise<AnalysisResult> {
       semanticTags: [],
       metaTags: {},
       sitemapUrl: null,
+      mcpServerInfo: null,
       recommendations: [],
     },
   };
@@ -92,6 +96,9 @@ export async function analyzeWebsite(url: string): Promise<AnalysisResult> {
 
     // Check for API endpoints (common patterns)
     await checkApiEndpoints(baseUrl, result);
+
+    // Check for MCP server
+    await checkMcpServer(baseUrl, result);
 
     // Calculate score
     calculateScore(result);
@@ -273,6 +280,26 @@ async function checkApiEndpoints(baseUrl: URL, result: AnalysisResult): Promise<
   }
 }
 
+async function checkMcpServer(baseUrl: URL, result: AnalysisResult): Promise<void> {
+  try {
+    const mcpUrl = new URL('/.well-known/mcp.json', baseUrl).toString();
+    const response = await axios.get(mcpUrl, {
+      timeout: 5000,
+      headers: { 'Accept': 'application/json' },
+    });
+    if (response.status === 200 && response.data) {
+      const data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
+      result.hasMcpServer = true;
+      result.details.mcpServerInfo = {
+        endpoint: data.endpoint || mcpUrl,
+        name: data.name || undefined,
+      };
+    }
+  } catch {
+    // MCP server not found
+  }
+}
+
 function calculateScore(result: AnalysisResult): void {
   let score = 0;
   
@@ -289,7 +316,8 @@ function calculateScore(result: AnalysisResult): void {
   if (result.hasServerSideRendering) score += 12;
   if (result.hasMetaTags) score += 9;
   if (result.hasSitemap) score += 8;
-  
+  if (result.hasMcpServer) score += 15; // High value for MCP-specific feature
+
   result.score = Math.min(score, 100); // Cap at 100
 }
 
@@ -326,6 +354,10 @@ function generateRecommendations(result: AnalysisResult): void {
   
   if (!result.hasSitemap) {
     recommendations.push('Create a sitemap.xml file to help LLMs and search engines discover all your pages');
+  }
+
+  if (!result.hasMcpServer) {
+    recommendations.push('Expose an MCP server at /.well-known/mcp.json to let AI agents interact with your site via the Model Context Protocol');
   }
   
   if (recommendations.length === 0) {

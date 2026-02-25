@@ -34,6 +34,7 @@ export const analyses = pgTable("analyses", {
   hasServerSideRendering: boolean("has_server_side_rendering").default(false).notNull(),
   hasMetaTags: boolean("has_meta_tags").default(false).notNull(),
   hasSitemap: boolean("has_sitemap").default(false).notNull(),
+  hasMcpServer: boolean("has_mcp_server").default(false).notNull(),
 
   details: jsonb("details"),
 

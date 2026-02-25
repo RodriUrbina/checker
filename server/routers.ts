@@ -30,6 +30,7 @@ export const appRouter = router({
           hasServerSideRendering: analysisResult.hasServerSideRendering,
           hasMetaTags: analysisResult.hasMetaTags,
           hasSitemap: analysisResult.hasSitemap,
+          hasMcpServer: analysisResult.hasMcpServer,
           details: analysisResult.details,
         });
 

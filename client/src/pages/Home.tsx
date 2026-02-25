@@ -150,7 +150,7 @@ export default function Home() {
                     { label: "llms.txt", pass: false },
                     { label: "JSON-LD", pass: true },
                     { label: "Semantic HTML", pass: true },
-                    { label: "Sitemap", pass: false },
+                    { label: "MCP Server", pass: false },
                   ].map((check, i) => (
                     <div key={i} className="flex items-center justify-between px-2 py-1.5 rounded border bg-background/50 text-xs">
                       <span className="text-muted-foreground">{check.label}</span>
@@ -222,7 +222,7 @@ export default function Home() {
                   icon: Code,
                   iconBg: "bg-blue-100 dark:bg-blue-500/20",
                   iconColor: "text-blue-600 dark:text-blue-400",
-                  items: ["JSON / Text / Markdown API endpoints", "llms.txt for compact site overview"],
+                  items: ["JSON / Text / Markdown API endpoints", "llms.txt for compact site overview", "MCP Server detection"],
                 },
                 {
                   category: "Content Feeds",
