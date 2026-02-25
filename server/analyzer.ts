@@ -23,7 +23,7 @@ export interface AnalysisResult {
     semanticTags: string[];
     metaTags: { [key: string]: string };
     sitemapUrl: string | null;
-    mcpServerInfo: { endpoint: string; name?: string } | null;
+    mcpServerInfo: { endpoint: string; name?: string; detectedVia?: string; githubRepo?: string } | null;
     recommendations: string[];
   };
 }
@@ -98,7 +98,7 @@ export async function analyzeWebsite(url: string): Promise<AnalysisResult> {
     await checkApiEndpoints(baseUrl, result);
 
     // Check for MCP server
-    await checkMcpServer(baseUrl, result);
+    await checkMcpServer(baseUrl, html, result);
 
     // Calculate score
     calculateScore(result);
@@ -284,7 +284,8 @@ async function checkApiEndpoints(baseUrl: URL, result: AnalysisResult): Promise<
   }
 }
 
-async function checkMcpServer(baseUrl: URL, result: AnalysisResult): Promise<void> {
+async function checkMcpServer(baseUrl: URL, html: string, result: AnalysisResult): Promise<void> {
+  // 1. Standard discovery endpoint: /.well-known/mcp.json
   try {
     const mcpUrl = new URL('/.well-known/mcp.json', baseUrl).toString();
     const response = await axios.get(mcpUrl, {
@@ -297,10 +298,97 @@ async function checkMcpServer(baseUrl: URL, result: AnalysisResult): Promise<voi
       result.details.mcpServerInfo = {
         endpoint: data.endpoint || mcpUrl,
         name: data.name || undefined,
+        detectedVia: '/.well-known/mcp.json',
       };
+      return; // Strongest signal — no need to check further
     }
   } catch {
-    // MCP server not found
+    // Not found, continue with other checks
+  }
+
+  // 2. Probe common MCP transport endpoints
+  const mcpPaths = ['/mcp', '/sse', '/mcp/sse'];
+  for (const path of mcpPaths) {
+    try {
+      const endpointUrl = new URL(path, baseUrl).toString();
+      const response = await axios.get(endpointUrl, {
+        timeout: 5000,
+        headers: { 'Accept': 'application/json, text/event-stream' },
+        validateStatus: (status) => status < 500,
+      });
+      const contentType = response.headers['content-type'] || '';
+      const isSSE = contentType.includes('text/event-stream');
+      const isJsonRpc = contentType.includes('application/json') &&
+        response.data && (response.data.jsonrpc || response.data.method || response.data.result);
+
+      if (isSSE || isJsonRpc) {
+        result.hasMcpServer = true;
+        result.details.mcpServerInfo = {
+          endpoint: endpointUrl,
+          detectedVia: `Live MCP transport at ${path}`,
+        };
+        return;
+      }
+    } catch {
+      // Endpoint not available
+    }
+  }
+
+  // 3. HTML content scanning (uses the already-fetched page HTML)
+  // 3a. GitHub repo links containing "mcp"
+  const githubMcpLinkMatch = html.match(/href=["'](https?:\/\/github\.com\/[^"']*mcp[^"']*?)["']/i);
+  if (githubMcpLinkMatch) {
+    result.hasMcpServer = true;
+    result.details.mcpServerInfo = {
+      endpoint: baseUrl.toString(),
+      githubRepo: githubMcpLinkMatch[1],
+      detectedVia: 'GitHub MCP repository link in page',
+    };
+    return;
+  }
+
+  // 3b. Text mentioning "MCP server" or "Model Context Protocol"
+  const mcpTextMatch = html.match(/MCP\s+server|Model\s+Context\s+Protocol/i);
+  if (mcpTextMatch) {
+    result.hasMcpServer = true;
+    result.details.mcpServerInfo = {
+      endpoint: baseUrl.toString(),
+      detectedVia: 'Mentioned in page content',
+    };
+    return;
+  }
+
+  // 3c. JSON-LD featureList mentioning MCP
+  const jsonLdRegex = /<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let jsonLdMatch;
+  while ((jsonLdMatch = jsonLdRegex.exec(html)) !== null) {
+    try {
+      const data = JSON.parse(jsonLdMatch[1]);
+      const featureList = data.featureList || data.feature || '';
+      const featureStr = Array.isArray(featureList) ? featureList.join(' ') : String(featureList);
+      if (/mcp|model context protocol/i.test(featureStr)) {
+        result.hasMcpServer = true;
+        result.details.mcpServerInfo = {
+          endpoint: baseUrl.toString(),
+          detectedVia: 'JSON-LD structured data',
+        };
+        return;
+      }
+    } catch {
+      // Invalid JSON-LD, skip
+    }
+  }
+
+  // 4. <link> tags referencing MCP
+  const mcpLinkTag = html.match(/<link[^>]*(?:href|rel)=["'][^"']*mcp[^"']*["'][^>]*>/i);
+  if (mcpLinkTag) {
+    const hrefMatch = mcpLinkTag[0].match(/href=["']([^"']+)["']/);
+    result.hasMcpServer = true;
+    result.details.mcpServerInfo = {
+      endpoint: hrefMatch ? new URL(hrefMatch[1], baseUrl).toString() : baseUrl.toString(),
+      detectedVia: 'Link tag in page head',
+    };
+    return;
   }
 }
 
@@ -361,7 +449,7 @@ function generateRecommendations(result: AnalysisResult): void {
   }
 
   if (!result.hasMcpServer) {
-    recommendations.push('Expose an MCP server at /.well-known/mcp.json to let AI agents interact with your site via the Model Context Protocol');
+    recommendations.push('Expose an MCP server (via /.well-known/mcp.json, /mcp endpoint, or page content) to let AI agents interact with your site via the Model Context Protocol');
   }
   
   if (recommendations.length === 0) {

@@ -259,11 +259,22 @@ export default function Results() {
                     <CardTitle className="text-card-foreground">MCP Server</CardTitle>
                     <CardDescription>Model Context Protocol server detected</CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-2">
                     {details.mcpServerInfo.name && (
-                      <p className="text-sm text-foreground mb-2">
+                      <p className="text-sm text-foreground">
                         <span className="font-semibold">Name:</span> {details.mcpServerInfo.name}
                       </p>
+                    )}
+                    {details.mcpServerInfo.detectedVia && (
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-semibold">Detected via:</span> {details.mcpServerInfo.detectedVia}
+                      </p>
+                    )}
+                    {details.mcpServerInfo.githubRepo && (
+                      <a href={details.mcpServerInfo.githubRepo} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline flex items-center gap-2 text-foreground">
+                        <ExternalLink className="h-3 w-3" />
+                        {details.mcpServerInfo.githubRepo}
+                      </a>
                     )}
                     <a href={details.mcpServerInfo.endpoint} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline flex items-center gap-2 text-foreground">
                       <ExternalLink className="h-3 w-3" />
