@@ -253,17 +253,17 @@ async function checkSitemap(baseUrl: URL, result: AnalysisResult): Promise<void>
 
 async function checkApiEndpoints(baseUrl: URL, result: AnalysisResult): Promise<void> {
   const commonApiPaths = ['/api', '/api/v1', '/graphql'];
-  
+
   for (const path of commonApiPaths) {
     try {
       const apiUrl = new URL(path, baseUrl).toString();
-      const response = await axios.get(apiUrl, { 
+      const response = await axios.get(apiUrl, {
         timeout: 5000,
         validateStatus: (status) => status < 500, // Accept any status < 500
       });
-      
+
       const contentType = response.headers['content-type'] || '';
-      
+
       if (contentType.includes('application/json')) {
         result.hasJsonApi = true;
         result.details.apiEndpoints.push(`${apiUrl} (JSON)`);
@@ -273,6 +273,10 @@ async function checkApiEndpoints(baseUrl: URL, result: AnalysisResult): Promise<
       } else if (contentType.includes('text/markdown')) {
         result.hasMarkdownApi = true;
         result.details.apiEndpoints.push(`${apiUrl} (Markdown)`);
+      } else if (contentType.includes('text/html') && response.status === 200) {
+        // An HTML page at /api paths is likely API docs — counts as having an API
+        result.hasJsonApi = true;
+        result.details.apiEndpoints.push(`${apiUrl} (API docs page)`);
       }
     } catch {
       // API endpoint not accessible
