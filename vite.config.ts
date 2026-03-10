@@ -53,8 +53,8 @@ function apiDevPlugin(): Plugin {
           }
 
           // Convert Node IncomingMessage → Fetch Request
-          // Use apiUrl (with /checker stripped) so handlers see the same paths as in production
-          const fullUrl = new URL(apiUrl, `http://${nodeReq.headers.host || "localhost:3000"}`);
+          // Keep the original URL (with /checker prefix) so handlers see the same paths as in production
+          const fullUrl = new URL(url, `http://${nodeReq.headers.host || "localhost:3000"}`);
           const headers = new Headers();
           for (const [key, value] of Object.entries(nodeReq.headers)) {
             if (value) headers.set(key, Array.isArray(value) ? value.join(", ") : value);
