@@ -4,7 +4,7 @@ export default async function handler() {
   return new Response(null, {
     status: 302,
     headers: [
-      ["Location", getAppUrl()],
+      ["Location", `${getAppUrl()}/checker`],
       ["Set-Cookie", buildClearCookieHeader()],
       ["Cache-Control", "private, no-store"],
     ],

@@ -61,7 +61,7 @@ export default async function handler(req: Request) {
   // Clear the oauth_state cookie
   const clearOauthCookie = "oauth_state=; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=0";
 
-  const returnTo = stored.returnTo || "/";
+  const returnTo = stored.returnTo || "/checker";
   const redirectUrl = `${getAppUrl()}${returnTo}`;
 
   return new Response(null, {

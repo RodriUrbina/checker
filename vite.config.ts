@@ -23,18 +23,21 @@ function apiDevPlugin(): Plugin {
     configureServer(server: ViteDevServer) {
       server.middlewares.use(async (nodeReq: IncomingMessage, nodeRes: ServerResponse, next: () => void) => {
         const url = nodeReq.url;
-        if (!url?.startsWith("/api/")) return next();
+        if (!url?.startsWith("/checker/api/")) return next();
+
+        // Strip /checker prefix for handler routing
+        const apiUrl = url.replace(/^\/checker/, "");
 
         try {
           // Determine which handler module to load
           let modulePath: string | null = null;
-          if (url.startsWith("/api/trpc")) {
+          if (apiUrl.startsWith("/api/trpc")) {
             modulePath = path.resolve(PROJECT_ROOT, "server/api/trpc/[...trpc].ts");
-          } else if (url === "/api/auth/google" || url.startsWith("/api/auth/google?")) {
+          } else if (apiUrl === "/api/auth/google" || apiUrl.startsWith("/api/auth/google?")) {
             modulePath = path.resolve(PROJECT_ROOT, "server/api/auth/google.ts");
-          } else if (url.startsWith("/api/auth/callback")) {
+          } else if (apiUrl.startsWith("/api/auth/callback")) {
             modulePath = path.resolve(PROJECT_ROOT, "server/api/auth/callback.ts");
-          } else if (url === "/api/auth/logout") {
+          } else if (apiUrl === "/api/auth/logout") {
             modulePath = path.resolve(PROJECT_ROOT, "server/api/auth/logout.ts");
           }
 
@@ -50,7 +53,8 @@ function apiDevPlugin(): Plugin {
           }
 
           // Convert Node IncomingMessage → Fetch Request
-          const fullUrl = new URL(url, `http://${nodeReq.headers.host || "localhost:3000"}`);
+          // Use apiUrl (with /checker stripped) so handlers see the same paths as in production
+          const fullUrl = new URL(apiUrl, `http://${nodeReq.headers.host || "localhost:3000"}`);
           const headers = new Headers();
           for (const [key, value] of Object.entries(nodeReq.headers)) {
             if (value) headers.set(key, Array.isArray(value) ? value.join(", ") : value);
@@ -98,6 +102,7 @@ function apiDevPlugin(): Plugin {
 }
 
 export default defineConfig({
+  base: "/checker/",
   plugins: [react(), tailwindcss(), apiDevPlugin()],
   resolve: {
     alias: {
@@ -108,7 +113,7 @@ export default defineConfig({
   root: path.resolve(PROJECT_ROOT, "client"),
   publicDir: path.resolve(PROJECT_ROOT, "client", "public"),
   build: {
-    outDir: path.resolve(PROJECT_ROOT, "dist/public"),
+    outDir: path.resolve(PROJECT_ROOT, "dist/public/checker"),
     emptyOutDir: true,
   },
 });

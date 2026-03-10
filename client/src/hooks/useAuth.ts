@@ -11,7 +11,7 @@ export function useAuth() {
 
   const logout = useCallback(async () => {
     // Navigate to the logout endpoint which clears the cookie and redirects
-    window.location.href = "/api/auth/logout";
+    window.location.href = "/checker/api/auth/logout";
   }, []);
 
   const refresh = useCallback(() => {

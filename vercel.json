@@ -1,11 +1,13 @@
 {
   "framework": "vite",
-  "buildCommand": "vite build && node scripts/build-api.mjs",
+  "buildCommand": "vite build && node scripts/build-api.mjs && cp ReadMe/pitch-deck.html dist/public/pitch-deck.html",
   "outputDirectory": "dist/public",
   "rewrites": [
-    { "source": "/api/trpc/:path*", "destination": "/api/trpc/[...trpc]" },
-    { "source": "/api/auth/google", "destination": "/api/auth/google" },
-    { "source": "/api/auth/callback", "destination": "/api/auth/callback" },
-    { "source": "/api/auth/logout", "destination": "/api/auth/logout" }
+    { "source": "/checker/api/trpc/:path*", "destination": "/api/trpc/[...trpc]" },
+    { "source": "/checker/api/auth/google", "destination": "/api/auth/google" },
+    { "source": "/checker/api/auth/callback", "destination": "/api/auth/callback" },
+    { "source": "/checker/api/auth/logout", "destination": "/api/auth/logout" },
+    { "source": "/checker/:path*", "destination": "/checker/index.html" },
+    { "source": "/", "destination": "/pitch-deck.html" }
   ]
 }

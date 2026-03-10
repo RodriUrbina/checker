@@ -3,7 +3,7 @@ import { getGoogleOAuth } from "../../_core/auth";
 
 export default async function handler(req: Request) {
   const url = new URL(req.url);
-  const returnTo = url.searchParams.get("returnTo") || "/";
+  const returnTo = url.searchParams.get("returnTo") || "/checker";
 
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
