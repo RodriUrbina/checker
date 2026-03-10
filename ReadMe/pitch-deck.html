@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bicoco - AI Feed | Pitch Deck</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-dark: #0a0a0f;
+    --bg-card: #12121a;
+    --accent: #6366f1;
+    --accent-glow: rgba(99, 102, 241, 0.3);
+    --text-primary: #f0f0f5;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+    --border: rgba(255,255,255,0.06);
+    --gradient-1: linear-gradient(135deg, #6366f1, #8b5cf6);
+    --gradient-2: linear-gradient(135deg, #06b6d4, #6366f1);
+    --gradient-3: linear-gradient(135deg, #f59e0b, #ef4444);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    scroll-snap-align: start;
+    position: relative;
+    padding: 60px 40px;
+  }
+
+  .slide-inner {
+    max-width: 1100px;
+    width: 100%;
+  }
+
+  .slide-number {
+    position: absolute;
+    top: 32px;
+    right: 40px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 2px;
+  }
+
+  /* Typography */
+  .hero-title {
+    font-size: clamp(48px, 7vw, 88px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+
+  .hero-title .gradient {
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h2 {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+
+  h2 .gradient {
+    background: var(--gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    font-size: clamp(18px, 2.5vw, 24px);
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 720px;
+    font-weight: 400;
+  }
+
+  .large-text {
+    font-size: 20px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 800px;
+  }
+
+  /* Cards */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-top: 40px;
+  }
+
+  .card-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    background: rgba(99, 102, 241, 0.1);
+  }
+
+  .card h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .card p {
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Stats */
+  .stat-row {
+    display: flex;
+    gap: 48px;
+    margin-top: 48px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    text-align: left;
+  }
+
+  .stat-number {
+    font-size: 56px;
+    font-weight: 900;
+    background: var(--gradient-2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    max-width: 180px;
+  }
+
+  /* Comparison */
+  .comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 40px;
+  }
+
+  .comparison-col {
+    padding: 36px;
+    border-radius: 16px;
+  }
+
+  .comparison-col.old {
+    background: rgba(239, 68, 68, 0.05);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+  }
+
+  .comparison-col.new {
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+  }
+
+  .comparison-col h3 {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .comparison-col.old h3 { color: #f87171; }
+  .comparison-col.new h3 { color: #818cf8; }
+
+  .comparison-col ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .comparison-col ul li {
+    padding: 10px 0;
+    color: var(--text-secondary);
+    font-size: 15px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .comparison-col ul li:last-child { border-bottom: none; }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .tag-accent {
+    background: rgba(99, 102, 241, 0.12);
+    color: #818cf8;
+  }
+
+  .tag-warning {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+  }
+
+  .tag-success {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+  }
+
+  /* Flow */
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+  }
+
+  .flow-step {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    text-align: center;
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .flow-step .step-num {
+    font-size: 13px;
+    font-weight: 700;
+    color: #818cf8;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+  }
+
+  .flow-step .step-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .flow-step .step-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .flow-arrow {
+    font-size: 24px;
+    color: var(--text-muted);
+  }
+
+  /* Pyramid / ICP */
+  .icp-tiers {
+    margin-top: 40px;
+  }
+
+  .icp-tier {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .icp-tier:last-child { border-bottom: none; }
+
+  .tier-badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .tier-badge.t1 { background: rgba(99,102,241,0.15); color: #818cf8; }
+  .tier-badge.t2 { background: rgba(6,182,212,0.12); color: #22d3ee; }
+  .tier-badge.t3 { background: rgba(245,158,11,0.12); color: #fbbf24; }
+
+  .tier-content h3 { font-size: 18px; margin-bottom: 6px; }
+  .tier-content p { color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+  .tier-examples { color: var(--text-muted); font-size: 13px; margin-top: 4px; font-style: italic; }
+
+  /* CTA */
+  .cta-box {
+    background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05));
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: 20px;
+    padding: 56px;
+    text-align: center;
+    margin-top: 40px;
+  }
+
+  .cta-box h2 { margin-bottom: 16px; }
+  .cta-box p { color: var(--text-secondary); font-size: 18px; max-width: 600px; margin: 0 auto; }
+
+  /* Divider */
+  .divider {
+    width: 60px;
+    height: 3px;
+    background: var(--gradient-1);
+    border-radius: 2px;
+    margin: 32px 0;
+  }
+
+  /* Signals list */
+  .signal-list {
+    margin-top: 32px;
+    counter-reset: signal;
+  }
+
+  .signal-item {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .signal-item:last-child { border-bottom: none; }
+
+  .signal-num {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(99,102,241,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: #818cf8;
+    flex-shrink: 0;
+  }
+
+  .signal-content h3 { font-size: 17px; margin-bottom: 4px; }
+  .signal-content p { color: var(--text-secondary); font-size: 14px; line-height: 1.6; }
+
+  /* Two-col */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+    margin-top: 40px;
+  }
+
+  /* Quote */
+  .quote {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--text-primary);
+    border-left: 3px solid #818cf8;
+    padding-left: 24px;
+    margin: 32px 0;
+    max-width: 700px;
+  }
+
+  .quote-source {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 12px;
+    font-weight: 400;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .slide { padding: 40px 24px; }
+    .card-grid-3 { grid-template-columns: 1fr; }
+    .comparison { grid-template-columns: 1fr; }
+    .stat-row { gap: 32px; }
+    .stat-number { font-size: 42px; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    .two-col { grid-template-columns: 1fr; gap: 32px; }
+    .cta-box { padding: 36px 24px; }
+  }
+
+  /* Navigation dots */
+  .nav-dots {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 100;
+  }
+
+  .nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .nav-dot.active {
+    background: #818cf8;
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  /* Keyboard hint */
+  .keyboard-hint {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.5;
+    z-index: 100;
+  }
+
+  .keyboard-hint kbd {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 11px;
+    margin: 0 2px;
+  }
+
+  /* Animated gradient bg for hero */
+  .hero-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99,102,241,0.12), transparent);
+    pointer-events: none;
+  }
+
+  /* Logo */
+  .logo {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    position: absolute;
+    top: 32px;
+    left: 40px;
+  }
+
+  .logo span {
+    color: #818cf8;
+  }
+
+  /* Product stack visual */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .stack-layer {
+    padding: 20px 28px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .stack-layer.l3 {
+    background: rgba(99,102,241,0.12);
+    border: 1px solid rgba(99,102,241,0.25);
+    color: #c7d2fe;
+  }
+
+  .stack-layer.l2 {
+    background: rgba(6,182,212,0.08);
+    border: 1px solid rgba(6,182,212,0.2);
+    color: #a5f3fc;
+  }
+
+  .stack-layer.l1 {
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.2);
+    color: #a7f3d0;
+  }
+
+  .stack-label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.6;
+    min-width: 90px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation Dots -->
+<nav class="nav-dots" id="navDots"></nav>
+<div class="keyboard-hint">Scroll or press <kbd>Space</kbd> to navigate</div>
+
+<!-- ============================================= -->
+<!-- SLIDE 1: TITLE -->
+<!-- ============================================= -->
+<section class="slide" id="slide-1">
+  <div class="hero-bg"></div>
+  <div class="logo">bi<span>coco</span></div>
+  <span class="slide-number">01</span>
+  <div class="slide-inner">
+    <div class="tag tag-accent">AI Discovery Optimization</div>
+    <h1 class="hero-title">
+      Your website is<br><span class="gradient">invisible to AI.</span>
+    </h1>
+    <p class="subtitle">
+      Search is moving from links to answers. AI agents now decide which businesses get recommended. Most websites aren't built for this. We fix that.
+    </p>
+    <div class="stat-row">
+      <div class="stat">
+        <div class="stat-number">4.2%</div>
+        <div class="stat-label">of all HTML requests come from AI bots today</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">60%</div>
+        <div class="stat-label">of software spend on AI agents by 2030 (Goldman Sachs)</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">1 in 24</div>
+        <div class="stat-label">page loads are from AI, not humans</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 2: THE SHIFT -->
+<!-- ============================================= -->
+<section class="slide" id="slide-2">
+  <span class="slide-number">02</span>
+  <div class="slide-inner">
+    <div class="tag tag-warning">The Paradigm Shift</div>
+    <h2>Search is no longer<br><span class="gradient">about links.</span></h2>
+    <p class="large-text">
+      When a buyer asks ChatGPT <em>"Who makes custom industrial valves in Ohio?"</em> or tells Perplexity <em>"Find me the best staffing agency for commercial cleaning"</em>&mdash;AI agents crawl, evaluate, and recommend businesses before a human ever clicks a link.
+    </p>
+
+    <div class="comparison">
+      <div class="comparison-col old">
+        <h3>The Old Playbook</h3>
+        <ul>
+          <li><span>&#10005;</span> Optimize for Google keywords</li>
+          <li><span>&#10005;</span> Write blog posts for humans</li>
+          <li><span>&#10005;</span> Build pages for visual appeal</li>
+          <li><span>&#10005;</span> Hope for click-throughs</li>
+          <li><span>&#10005;</span> 10 pages of SEO content</li>
+        </ul>
+      </div>
+      <div class="comparison-col new">
+        <h3>The New Reality</h3>
+        <ul>
+          <li><span>&#10003;</span> Optimize for AI comprehension</li>
+          <li><span>&#10003;</span> Structure content for machines</li>
+          <li><span>&#10003;</span> Build for parsability & citations</li>
+          <li><span>&#10003;</span> Be the answer, not the link</li>
+          <li><span>&#10003;</span> Hundreds of targeted pages</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote" style="margin-top: 40px;">
+      Why should you care?
+      <div class="quote-source" style="font-size: 16px; color: var(--text-secondary); margin-top: 12px; line-height: 1.6;">
+        When AI recommends your competitor instead of you, your inbound pipeline shrinks&mdash;fewer leads, fewer conversions, less revenue. The businesses that show up in AI answers capture demand that used to be yours. Every query where you're absent is a deal your competition wins by default.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 3: THE PROBLEM -->
+<!-- ============================================= -->
+<section class="slide" id="slide-3">
+  <span class="slide-number">03</span>
+  <div class="slide-inner">
+    <div class="tag tag-warning">The Problem</div>
+    <h2>Search is evolving.<br><span class="gradient">Most websites aren't.</span></h2>
+    <p class="large-text">
+      Traditional web search is giving way to AI-driven answers. Most websites were built for humans browsing, not AI agents retrieving&mdash;and that gap is growing every day.
+    </p>
+
+    <div class="card-grid card-grid-3">
+      <div class="card">
+        <div class="card-icon">&#128679;</div>
+        <h3>Heavy JavaScript</h3>
+        <p>SPAs and frameworks like React render content in-browser. AI crawlers see empty shells. Your content literally doesn't exist to them.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128196;</div>
+        <h3>Unstructured Content</h3>
+        <p>Marketing copy without FAQs, semantic headings, or schema markup. LLMs can't extract answers from vague brand storytelling.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128274;</div>
+        <h3>Locked Information</h3>
+        <p>Key details hidden in PDFs, gated content, or login-only pages. If AI can't crawl it, it doesn't exist.</p>
+      </div>
+    </div>
+
+    <div class="quote">
+      "In the insurance industry, brokers achieve ~36% visibility in LLM queries. Traditional insurers: ~17%. The difference? Structure, not size."
+      <div class="quote-source">&mdash; ERGO LLM Visibility Research</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 4: SOLUTION -->
+<!-- ============================================= -->
+<section class="slide" id="slide-4">
+  <span class="slide-number">04</span>
+  <div class="slide-inner">
+    <div class="tag tag-success">The Solution</div>
+    <h2>A complete platform for<br><span class="gradient">AI discoverability.</span></h2>
+    <p class="large-text">
+      Not a one-off audit. A full-stack system that creates, connects, and continuously optimizes your entire web presence so AI agents find you, understand you, and recommend you.
+    </p>
+
+    <div class="card-grid card-grid-3">
+      <div class="card">
+        <div class="card-icon">&#128218;</div>
+        <h3>Page Generation</h3>
+        <p>Hundreds of LLM-optimized pages, each targeting a specific question buyers ask AI. Auto-generated, structured, and ready to cite.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128279;</div>
+        <h3>Internal Linking</h3>
+        <p>Automated backlinks and cross-references between pages, building the topic clusters that signal authority to AI retrieval systems.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128225;</div>
+        <h3>Social Proof Layer</h3>
+        <p>Coordinated social media content that reinforces your pages with external authority signals LLMs use to validate trust.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#129302;</div>
+        <h3>LLM Optimization</h3>
+        <p>Every page built with schema markup, llms.txt, MCP support, and semantic structure tuned for how AI actually reads content.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128260;</div>
+        <h3>Auto-Adaptation</h3>
+        <p>Algorithms change weekly. The platform monitors crawling patterns and automatically adjusts your content to stay visible.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#9889;</div>
+        <h3>Zero Migration</h3>
+        <p>Layers on top of your existing site. Nothing changes. Everything gets better.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 5: THE PRODUCT -->
+<!-- ============================================= -->
+<section class="slide" id="slide-5">
+  <span class="slide-number">05</span>
+  <div class="slide-inner">
+    <div class="tag tag-accent">The Product</div>
+    <h2>Diagnose. Optimize.<br><span class="gradient">Dominate.</span></h2>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="step-num">STEP 01</div>
+        <div class="step-title">Analyze</div>
+        <div class="step-desc">14-point AI readiness audit of your website</div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="step-num">STEP 02</div>
+        <div class="step-title">Diagnose</div>
+        <div class="step-desc">Identify why you're invisible to AI assistants</div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="step-num">STEP 03</div>
+        <div class="step-title">Optimize</div>
+        <div class="step-desc">Deploy AI Feed with hundreds of targeted pages</div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-step">
+        <div class="step-num">STEP 04</div>
+        <div class="step-title">Track</div>
+        <div class="step-desc">Monitor visibility across ChatGPT, Perplexity, Gemini</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 48px; margin-bottom: 8px; color: var(--text-secondary); font-size: 14px; letter-spacing: 2px; text-transform: uppercase;">The Visibility Stack</h3>
+    <div class="stack">
+      <div class="stack-layer l3">
+        <span class="stack-label">Layer 3</span>
+        MCP Server &mdash; AI agents can interact with your business directly
+      </div>
+      <div class="stack-layer l2">
+        <span class="stack-label">Layer 2</span>
+        AI Feed &mdash; Structured pages, schema, llms.txt, topic clusters
+      </div>
+      <div class="stack-layer l1">
+        <span class="stack-label">Layer 1</span>
+        Existing Website &mdash; Your current pages, untouched
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 6: READINESS CHECKER -->
+<!-- ============================================= -->
+<section class="slide" id="slide-6">
+  <span class="slide-number">06</span>
+  <div class="slide-inner">
+    <div class="tag tag-accent">Step 1: Analyze</div>
+    <h2>LLM Readiness<br><span class="gradient">Checker.</span></h2>
+    <p class="large-text">
+      Our free analyzer scores any website across 14 dimensions of AI readiness. The top of the funnel that shows businesses exactly what they're missing.
+    </p>
+
+    <div class="card-grid card-grid-3">
+      <div class="card">
+        <div class="card-icon">&#128301;</div>
+        <h3>APIs & Feeds</h3>
+        <p>JSON/REST endpoints, RSS, Atom, JSON Feed detection. Machine-readable data interfaces.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128220;</div>
+        <h3>LLM Signals</h3>
+        <p>llms.txt files, MCP server endpoints, structured JSON-LD, semantic HTML analysis.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#128200;</div>
+        <h3>Technical Health</h3>
+        <p>SSR detection, meta tags, sitemap presence, crawlability scoring. Full audit in seconds.</p>
+      </div>
+    </div>
+
+    <div class="quote" style="margin-top: 40px;">
+      "SEO for AI driven web search."
+    </div>
+
+    <p style="margin-top: 24px;"><a href="https://www.bicoco.com/" target="_blank" rel="noopener" style="color: #818cf8; font-size: 18px; font-weight: 600; text-decoration: none; border-bottom: 1px solid rgba(129,140,248,0.4);">Try it now &rarr; bicoco.com</a></p>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 7: ICP -->
+<!-- ============================================= -->
+<section class="slide" id="slide-7">
+  <span class="slide-number">07</span>
+  <div class="slide-inner">
+    <div class="tag tag-accent">Go-To-Market</div>
+    <h2>Who we <span class="gradient">serve.</span></h2>
+    <p class="large-text">
+      Businesses whose revenue depends on being found online. Niche queries, high-value leads, and small marketing teams.
+    </p>
+
+    <div class="icp-tiers">
+      <div class="icp-tier">
+        <div class="tier-badge t1">TIER 1</div>
+        <div class="tier-content">
+          <h3>Search-Dependent Niche Services</h3>
+          <p>Highest urgency. These businesses live or die by online discovery and are being displaced by competitors with better AI structure.</p>
+          <div class="tier-examples">Language schools, coding bootcamps, certification providers, immigration consultancies, medical training academies</div>
+        </div>
+      </div>
+      <div class="icp-tier">
+        <div class="tier-badge t2">TIER 2</div>
+        <div class="tier-content">
+          <h3>Professional Services</h3>
+          <p>High-value leads with significant lifetime value. Local and specialized queries are increasingly handled by AI.</p>
+          <div class="tier-examples">Clinics, law firms, consultants, relocation agencies, private universities</div>
+        </div>
+      </div>
+      <div class="icp-tier">
+        <div class="tier-badge t3">TIER 3</div>
+        <div class="tier-content">
+          <h3>Digital-First Businesses</h3>
+          <p>Large addressable market. Already digitally mature but need AI-specific optimization.</p>
+          <div class="tier-examples">SaaS companies, e-commerce businesses, B2B platforms</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 8: MARKET OPPORTUNITY -->
+<!-- ============================================= -->
+<section class="slide" id="slide-8">
+  <span class="slide-number">08</span>
+  <div class="slide-inner">
+    <div class="tag tag-success">Market Opportunity</div>
+    <h2>A massive market<br><span class="gradient">waiting to be served.</span></h2>
+
+    <div class="stat-row">
+      <div class="stat">
+        <div class="stat-number">60K</div>
+        <div class="stat-label">businesses in the early European segment alone</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">50M+</div>
+        <div class="stat-label">SMBs globally depend on online discovery</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">&euro;300M</div>
+        <div class="stat-label">ARR potential at just 1% global adoption</div>
+      </div>
+    </div>
+
+    <div class="two-col" style="margin-top: 48px;">
+      <div>
+        <h3 style="color: var(--text-secondary); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;">Growth Trajectory</h3>
+        <div class="card" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Year 1</div>
+              <div style="font-size: 15px; margin-top: 4px;">100 customers</div>
+            </div>
+            <div style="font-size: 28px; font-weight: 800; color: #818cf8;">&euro;72K</div>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Year 2</div>
+              <div style="font-size: 15px; margin-top: 4px;">1,000 customers</div>
+            </div>
+            <div style="font-size: 28px; font-weight: 800; color: #22d3ee;">&euro;720K</div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase;">Year 3</div>
+              <div style="font-size: 15px; margin-top: 4px;">5,000 customers</div>
+            </div>
+            <div style="font-size: 28px; font-weight: 800; color: #34d399;">&euro;3.6M</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 style="color: var(--text-secondary); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px;">Customer ROI</h3>
+        <div class="card" style="background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(16,185,129,0.05)); border-color: rgba(99,102,241,0.2);">
+          <div style="font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Example: Language School</div>
+          <div style="margin-top: 20px; display: flex; gap: 24px;">
+            <div style="text-align: center; flex: 1;">
+              <div style="font-size: 32px; font-weight: 800; color: #818cf8;">&euro;1,500</div>
+              <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">avg. course value per student</div>
+            </div>
+            <div style="text-align: center; flex: 1;">
+              <div style="font-size: 32px; font-weight: 800; color: #22d3ee;">+2</div>
+              <div style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">extra students/month from AI visibility</div>
+            </div>
+          </div>
+          <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); text-align: center;">
+            <div style="font-size: 14px; color: var(--text-secondary);">Monthly tool cost: <strong style="color: var(--text-primary);">&euro;100</strong></div>
+            <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">Additional monthly revenue: <strong style="color: #34d399;">&euro;3,000</strong></div>
+            <div style="font-size: 40px; font-weight: 900; margin-top: 12px; background: linear-gradient(135deg, #34d399, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">30x ROI</div>
+          </div>
+        </div>
+
+        <h3 style="color: var(--text-secondary); font-size: 14px; letter-spacing: 2px; text-transform: uppercase; margin-top: 28px; margin-bottom: 16px;">Pricing Tiers</h3>
+        <div style="display: flex; gap: 12px;">
+          <div class="card" style="flex: 1; text-align: center; padding: 20px;">
+            <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Self-Service</div>
+            <div style="font-size: 24px; font-weight: 800; color: #818cf8; margin-top: 8px;">&euro;39&ndash;99</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">/month</div>
+          </div>
+          <div class="card" style="flex: 1; text-align: center; padding: 20px;">
+            <div style="font-size: 13px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Managed</div>
+            <div style="font-size: 24px; font-weight: 800; color: #22d3ee; margin-top: 8px;">&euro;300&ndash;1K</div>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">/month</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 9: WHY NOW -->
+<!-- ============================================= -->
+<section class="slide" id="slide-9">
+  <span class="slide-number">09</span>
+  <div class="slide-inner">
+    <div class="tag tag-warning">Timing</div>
+    <h2>The window is<br><span class="gradient">closing.</span></h2>
+
+    <div class="two-col">
+      <div>
+        <p class="large-text">
+          AI discovery is where SEO was in 2005. The protocols are being written. The standards are emerging. First movers will define the category.
+        </p>
+        <div class="divider"></div>
+        <p class="large-text">
+          Each LLM works differently&mdash;ChatGPT, Perplexity, and Gemini all crawl, rank, and cite differently. Algorithms change weekly. The complexity is accelerating beyond what any business can handle manually.
+        </p>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom: 16px;">
+          <h3 style="color: #818cf8;">AI agents are already here</h3>
+          <p>Cloudflare: 1 in 24 page loads is an AI bot. This number grows every month.</p>
+        </div>
+        <div class="card" style="margin-bottom: 16px;">
+          <h3 style="color: #22d3ee;">Discovery is moving off Google</h3>
+          <p>Users ask AI for direct answers. They get recommendations, not links. No click, no chance.</p>
+        </div>
+        <div class="card" style="margin-bottom: 16px;">
+          <h3 style="color: #fbbf24;">From answers to actions</h3>
+          <p>AI agents will soon compare, book, and buy. Businesses must be machine-integratable or be excluded entirely.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: #34d399;">Category is undefined</h3>
+          <p>There is no "Ahrefs for AI search" yet. The winner of this category hasn't been decided.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================= -->
+<!-- SLIDE 10: CTA -->
+<!-- ============================================= -->
+<section class="slide" id="slide-10">
+  <div class="hero-bg"></div>
+  <span class="slide-number">10</span>
+  <div class="slide-inner">
+    <div class="cta-box">
+      <div class="tag tag-success">Let's Build</div>
+      <h2>The shift is happening.<br>The businesses that adapt now<br><span class="gradient">will own it.</span></h2>
+      <p style="margin-top: 24px;">
+        We're building the infrastructure layer between the existing web and the AI agents that are replacing human browsing. Discovery is being rewritten. We're writing the protocol.
+      </p>
+      <div class="quote" style="border-left-color: #34d399; text-align: left; margin: 32px auto; max-width: 600px; font-size: 22px;">
+        The key trigger: when businesses start asking <em>"Why does AI recommend my competitor but not me?"</em>
+      </div>
+      <div class="stat-row" style="justify-content: center; margin-top: 24px;">
+        <div class="stat" style="text-align: center;">
+          <div class="stat-number">ADO</div>
+          <div class="stat-label" style="margin: 8px auto 0;">AI Discovery Optimization</div>
+        </div>
+      </div>
+    </div>
+    <p style="text-align: center; margin-top: 32px; color: var(--text-muted); font-size: 14px;">
+      bicoco &middot; Your Website's Protocol for the AI Era
+    </p>
+  </div>
+</section>
+
+<script>
+  // Create navigation dots
+  const slides = document.querySelectorAll('.slide');
+  const navDots = document.getElementById('navDots');
+
+  slides.forEach((slide, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => {
+      slide.scrollIntoView({ behavior: 'smooth' });
+    });
+    navDots.appendChild(dot);
+  });
+
+  // Update active dot on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const index = Array.from(slides).indexOf(entry.target);
+        document.querySelectorAll('.nav-dot').forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
+      }
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(slide => observer.observe(slide));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    const dots = document.querySelectorAll('.nav-dot');
+    const activeIndex = Array.from(dots).findIndex(d => d.classList.contains('active'));
+
+    if ((e.key === 'ArrowDown' || e.key === ' ') && activeIndex < slides.length - 1) {
+      e.preventDefault();
+      slides[activeIndex + 1].scrollIntoView({ behavior: 'smooth' });
+    } else if (e.key === 'ArrowUp' && activeIndex > 0) {
+      e.preventDefault();
+      slides[activeIndex - 1].scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+</script>
+</body>
+</html>
